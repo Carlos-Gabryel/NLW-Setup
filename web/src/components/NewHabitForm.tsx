@@ -1,28 +1,93 @@
+import * as Checkbox from "@radix-ui/react-checkbox";
 import { Check } from "phosphor-react";
+import { FormEvent, useState } from "react";
+import { api } from "../lib/axios";
 
-export function NewHabitForm(){
-    return (
-        <form className="w-full flex flex-col mt-6">
-            <label htmlFor = "title" className="font-semibold leading-tight">
-                Qual o seu novo Habito?
-            </label>
+const availableWeekDays = [
+	"Sunday",
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday",
+];
 
-            <input
-                type = "text"
-                id = "title"
-                placeholder="ex.: Exercícios, Dormir Bem, Estudar, etc..."
-                className="p-4 rounded-lg mt-3 bg-zinc-800 text-white placeholder-zinc-400"
-                autoFocus
-                />
+export function NewHabitForm() {
+	const [title, setTitle] = useState("");
+	const [weekDays, setWeekDays] = useState<number[]>([]);
 
-                <label htmlFor="" className="font-semibold leading-tight mt-4">
-                    Em que dias você pretende praticar esse hábito?
-                </label>
+	async function createNewHabit(event: FormEvent) {
+		event.preventDefault();
 
-                <button type="submit" className="mt-6 rounded-lg p-4 flex items-center justify-center gap-3 font-semibold bg-green-600 hover:bg-green-500">
-                    <Check size={20} weight="bold"/>
-                    Criar Hábito
-                </button>
-        </form>
-    );
-}
+		if (!title || weekDays.length === 0) return {};
+		await api.post("habits", {
+			title,
+			weekDays,
+		});
+
+		setTitle("");
+		setWeekDays([]);
+		alert("Habit created!");
+	}
+		function handleToggleWeekDay(weekDay: number) {
+			if (weekDays.includes(weekDay)) {
+				const weekDaysWithRemovedOne = weekDays.filter(
+					(day) => day !== weekDay
+				);
+				setWeekDays(weekDaysWithRemovedOne);
+			} else {
+				const weekDaysWithAddedOne = [...weekDays, weekDay];
+				setWeekDays(weekDaysWithAddedOne);
+			}
+		}
+
+		return (
+			<form onSubmit={createNewHabit} className="w-full flex flex-col mt-6">
+				<label htmlFor="title" className="font-semibold leading-tight">
+					What is your new habit?
+				</label>
+
+				<input
+					type="text"
+					id="title"
+					placeholder="ex.: Exercise, sleep well, etc..."
+					className="p-4 rounded-lg mt-3 bg-zinc-800 text-white placeholder-zinc-400"
+					autoFocus
+					value={title}
+					onChange={(event) => setTitle(event.target.value)}
+				/>
+
+				<label htmlFor="" className="font-semibold leading-tight mt-4">
+					Which days of the week do you want to add this?
+				</label>
+
+				<div className="flex flex-col gap-2 mt-3">
+					{availableWeekDays.map((weekDay, index) => (
+						<Checkbox.Root
+							key={weekDay}
+							className="flex items-center gap-3 group"
+							checked={weekDays.includes(index)}
+							onCheckedChange={() => handleToggleWeekDay(index)}
+						>
+							<div className="h-8 w-8 rounded-lg flex items-center justify-center bg-zinc-900 border-2 border-zinc-800 group-data-[state=checked]:bg-violet-500 group-data-[state=checked]:border-violet-800">
+								<Checkbox.Indicator>
+									<Check size={20} className="text-white" />
+								</Checkbox.Indicator>
+							</div>
+
+							<span className="text-white leading-tight">{weekDay}</span>
+						</Checkbox.Root>
+					))}
+				</div>
+
+				<button
+					type="submit"
+					className="mt-6 rounded-lg p-4 flex items-center justify-center gap-3 font-semibold bg-violet-600 hover:bg-violet-500"
+				>
+					<Check size={20} weight="bold" />
+					Create Habit
+				</button>
+			</form>
+		);
+	}
