@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import colors from "tailwindcss/colors";
 import { api } from "../lib/axios";
+import Animated from "react-native-reanimated";
 
 const availableWeekDays = [
 	"Monday",
@@ -40,7 +41,7 @@ export function New() {
 	async function handleCreateNewHabit() {
 		try {
 			if (!title.trim() || weekDays.length === 0) {
-				Alert.alert(
+				return Alert.alert(
 					"New Habit",
 					"Please, inform the name and days of your new habit !"
 				);
@@ -83,11 +84,12 @@ export function New() {
 					value={title}
 				/>
 
-				<Text className="font-semibold text-white text-base mt-4 mb-6">
+				<Text className="font-semibold text-white text-base mt-4 mb-12">
 					Which days of the week do you want to add this?
 				</Text>
 				{availableWeekDays.map((weekDay, index) => (
 					<Checkbox
+						className="px-1"
 						key={weekDay}
 						title={weekDay}
 						checked={weekDays.includes(index)}
@@ -95,14 +97,16 @@ export function New() {
 					/>
 				))}
 
+				<Animated.View>
 				<TouchableOpacity
-					className="w-full h-14 flex-row items-center justify-center bg-violet-600 rounded-md mt-6"
+					className="w-full h-14 flex-row items-center justify-center bg-violet-600 rounded-md mt-14"
 					activeOpacity={0.7}
 					onPress={handleCreateNewHabit}
 				>
 					<Feather name="check" size={20} color={colors.white} />
-					<Text className="font-bold text-2xl text-white ml-3 ">Confirm</Text>
+					<Text className="font-bold text-2xl text-white ml-3">Confirm</Text>
 				</TouchableOpacity>
+				</Animated.View>
 			</ScrollView>
 		</View>
 	);
