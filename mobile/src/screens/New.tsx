@@ -53,10 +53,10 @@ export function New() {
 			setTitle("");
 			setWeekDays([]);
 
-			Alert.alert("New Habit", "Habit created successfully !");
+			Alert.alert("New Habit", "Habit created successfully 😊");
 		} catch (error) {
 			console.log(error);
-			Alert.alert("Ops .-.", "An error occurred while creating a new habit !");
+			Alert.alert("Ops 😟", "An error occurred while creating a new habit 😣");
 		}
 		{
 		}

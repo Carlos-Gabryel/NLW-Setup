@@ -53,7 +53,7 @@ export function Habit() {
 			setCompletedHabits(response.data.completedHabits);
 		} catch (error) {
 			console.log(error);
-			Alert.alert("Ops .-.", "An error occurred while searching a habit !");
+			Alert.alert("Ops 😟", "An error occurred while searching a habit 😣");
 		} finally {
 			setLoading(false);
 		}
@@ -83,6 +83,30 @@ export function Habit() {
 		return <Loading />;
 	}
 
+	function handleDeleteHabit(id: string) {
+		Alert.alert("Delete habit", "Are you sure you want to delete this habit?", [
+			{
+				text: "Cancel",
+				style: "cancel",
+			},
+			{
+				text: "Delete",
+				onPress: async () => {
+					try {
+						await api.delete(`/habits/${id}`);
+						fetchHabits();
+					} catch (error) {
+						console.log(error);
+						Alert.alert(
+							"Ops 😟",
+							"An error occurred while deleting a habit 😣"
+						);
+					}
+				},
+			},
+		]);
+	}
+
 	return (
 		<View className="flex-1 bg-background px-4 pt-16">
 			<ScrollView
@@ -100,7 +124,8 @@ export function Habit() {
 				<ProgressBar progress={habitsProgress} />
 
 				<View className={clsx("mt-6 px-1", { ["opacity-50"]: isDateInPast })}>
-					{dayInfo?.possibleHabits ? (
+					{
+					dayInfo?.possibleHabits ? (
 						dayInfo.possibleHabits?.map((habit) => (
 							<Checkbox
 								key={habit.id}
